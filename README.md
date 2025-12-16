@@ -1,6 +1,6 @@
 #  Chords LSL Visualizer
 
-**Rust + Next.js + Tauri** application to discover **Lab Streaming Layer (LSL)** streams and visualize **multi‑channel biosignals**.
+**Rust + Next.js + Tauri** application to discover **Lab Streaming Layer (LSL)** streams and visualize **multi‑channel biopotential signals**.
 
 
 ## System Requirements
@@ -121,23 +121,7 @@ You can run the app in **two modes**.
 
 ---
 
-### Option A: Web Preview (Browser Only)
-
-Runs the Next.js frontend without the native desktop shell.
-
-```bash
-npm run dev
-```
-
-Open in browser:
-
-```
-http://localhost:3000
-```
-
----
-
-### Option B: Desktop App (Recommended)
+### Desktop App 
 
 Runs **Next.js + Tauri + Rust backend** together.
 
@@ -163,13 +147,7 @@ The first build may take several minutes.
 
 ## 6. Building Desktop Installers
 
-### Step 1: Build Frontend
-
-```bash
-npm run build
-```
-
-### Step 2: Build Installers
+### Build Installers
 
 ```bash
 npm run tauri build

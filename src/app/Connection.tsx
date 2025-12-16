@@ -387,18 +387,14 @@ const Connection: React.FC<ConnectionProps> = ({
     };
 
     const toggleChannel = (channelIndex: number) => {
+        setManuallySelected(true); // mark as manual before mutating parent state
         setSelectedChannels((prevSelected) => {
-            setManuallySelected(true);
             const updatedChannels = prevSelected.includes(channelIndex)
                 ? prevSelected.filter((ch) => ch !== channelIndex)
                 : [...prevSelected, channelIndex];
 
             const sortedChannels = updatedChannels.sort((a, b) => a - b);
-
-            if (sortedChannels.length === 0) {
-                sortedChannels.push(1);
-            }
-
+            if (sortedChannels.length === 0) sortedChannels.push(1);
             return sortedChannels;
         });
     };
