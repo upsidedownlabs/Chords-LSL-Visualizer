@@ -394,7 +394,7 @@ const Connection: React.FC<ConnectionProps> = ({
                 : [...prevSelected, channelIndex];
 
             const sortedChannels = updatedChannels.sort((a, b) => a - b);
-            if (sortedChannels.length === 0) sortedChannels.push(1);
+            if (sortedChannels.length === 0) sortedChannels.push(0);
             return sortedChannels;
         });
     };
