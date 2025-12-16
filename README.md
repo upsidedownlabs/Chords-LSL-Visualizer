@@ -155,7 +155,7 @@ npm run tauri build
 
 Generated installers can be found in:
 
-```
+```text
 src-tauri/target/release/bundle/
 ```
 
