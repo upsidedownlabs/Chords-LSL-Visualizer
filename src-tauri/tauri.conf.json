@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0-rc",
   "productName": "Chords LSL Visualizer",
-  "version": "0.1.0",
-  "identifier": "com.origininterconnect.",
+  "version": "0.1.1",
+  "identifier": "com.upsidedownlabs.chords",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Chords LSL Visualizer",
+        "title": "Chords LSL Visualizer (v0.1.1)",
         "width": 800,
         "height": 600,
         "resizable": true,
@@ -25,9 +25,14 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "msi", "dmg", "rpm"],
+    "targets": [
+      "deb",
+      "msi",
+      "dmg",
+      "rpm"
+    ],
     "icon": [
-       "icons/chords-logo.png",
+      "icons/chords-logo.png",
       "icons/Chords-logo-128px.ico"
     ],
     "macOS": {

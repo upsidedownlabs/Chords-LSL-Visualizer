@@ -1,7 +1,14 @@
-#  Chords LSL Visualizer
+#  Chords LSL Visualizer - User Guide
+
+![Chords LSL Visualizer](app.png)
 
 **Rust + Next.js + Tauri** application to discover **Lab Streaming Layer (LSL)** streams and visualize **multi‑channel biopotential signals**.
 
+**Version Management:** 
+- To update the version, modify only the `version.json` file
+- This ensures clean builds every time the version is updated across all necessary files
+
+---
 
 ## System Requirements
 
@@ -281,5 +288,3 @@ Contributions are welcome.
 5. Open a Pull Request
 
 ---
-
-## 13. License

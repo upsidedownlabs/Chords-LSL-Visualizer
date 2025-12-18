@@ -1,0 +1,6 @@
+{
+  "version": "0.1.1",
+  "name": "Chords LSL Visualizer",
+  "identifier": "com.upsidedownlabs.chords",
+  "description": "Rust based LSL visualizer for device running Chords Firmware"
+}

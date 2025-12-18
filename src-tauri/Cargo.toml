@@ -1,35 +1,46 @@
 [package]
 name = "Chords-LSL-Visualizer"
-version = "0.1.0"
-description = "LSL Data Visualizer"
-authors = ["Aman Maheshwari"]
+version = "0.1.1"
+description = "Rust based LSL visualizer for device running Chords Firmware"
+authors = [ "Aman Maheshwari" ]
 license = "GPL-V3"
 repository = "https://github.com/upsidedownlabs/Chords-LSL-Visualizer"
 edition = "2021"
 rust-version = "1.77.2"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 name = "app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = [ "staticlib", "cdylib", "rlib" ]
 
-[build-dependencies]
-tauri-build = { version = "2.2.0", features = [] }
+[build-dependencies.tauri-build]
+version = "2.2.0"
+features = [ ]
 
 [dependencies]
 serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.5.0", features = [] }
 tauri-plugin-log = "2.0.0-rc"
-tokio = { version = "1.0", features = ["full"] }
 tokio-tungstenite = "0.20"
 futures-util = "0.3"
 tungstenite = "0.20"
-lsl = { git = "https://github.com/labstreaminglayer/liblsl-rust", version = "0.1.1" }
 lazy_static = "1.4"
 crossbeam-channel = "0.5"
 minidom = "0.15"
-roxmltree = "0.18"  
+roxmltree = "0.18"
 xmltree = "0.10"
+
+  [dependencies.serde]
+  version = "1.0"
+  features = [ "derive" ]
+
+  [dependencies.tauri]
+  version = "2.5.0"
+  features = [ ]
+
+  [dependencies.tokio]
+  version = "1.0"
+  features = [ "full" ]
+
+  [dependencies.lsl]
+  git = "https://github.com/labstreaminglayer/liblsl-rust"
+  version = "0.1.1"
