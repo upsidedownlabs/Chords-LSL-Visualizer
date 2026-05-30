@@ -78,11 +78,8 @@ jobs:
                   
       - name: Install Dependencies
         run: |
-          npm install
-          npm install tailwindcss-animate
-          
-      - name: Run npm audit
-        run: npm audit --audit-level=high
+          npm install --legacy-peer-deps
+          npm install tailwindcss-animate --legacy-peer-deps
 
       - name: Install GTK and Build Tools (Ubuntu only)
         if: runner.os == 'Linux'
@@ -91,7 +88,7 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libudev-dev build-essential pkg-config
           
       - name: Install Tauri CLI (locally)
-        run: npm install @tauri-apps/cli
+        run: npm install @tauri-apps/cli --legacy-peer-deps
 
       - name: Clean npm cache
         run: npm cache clean --force

@@ -13,9 +13,15 @@
 # testing
 /coverage
 
-# next.js
+# Next.js build outputs
 /.next/
+/.out/
+.out/
 /out/
+.next/
+.next.config.ts.timestamp
+.next/cache/
+package-lock.json
 
 # production
 /build
