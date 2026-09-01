@@ -120,6 +120,10 @@ jobs:
             --team-id "${{ secrets.TEAM_ID }}" \
             --password "${{ secrets.APP_PASSWORD }}"
 
+      - name: Setup MSVC dev environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Build Tauri App
         run: npx tauri build
 
