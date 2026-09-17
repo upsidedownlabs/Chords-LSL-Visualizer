@@ -1,4 +1,4 @@
-name: Build and Release Tauri App
+name: Build and Release Chords-LSL-Visualizer App
 
 on:
   push:
@@ -21,8 +21,8 @@ jobs:
         id: get_version
         run: |
           version="v$(jq -r '.version' version.json)"
-          echo "version=$version" >> $GITHUB_OUTPUT
-          
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Check if Tag Exists
         id: check_tag
         run: |
@@ -31,12 +31,12 @@ jobs:
           git fetch --tags
           if git rev-parse "$version" >/dev/null 2>&1; then
             echo "Tag $version already exists."
-            echo "tag_exists=true" >> $GITHUB_OUTPUT
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "Tag $version does not exist."
-            echo "tag_exists=false" >> $GITHUB_OUTPUT
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
-            
+
       - name: Create Tag
         if: steps.check_tag.outputs.tag_exists == 'false'
         run: |
@@ -73,13 +73,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20  
+          node-version: 20
 
       - name: Install macOS canvas dependencies
         if: runner.os == 'macOS'
         run: |
           brew install pkg-config cairo pango libpng jpeg giflib librsvg
-                  
+
       - name: Install Dependencies
         run: |
           npm install --legacy-peer-deps
@@ -90,7 +90,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libudev-dev build-essential pkg-config
-          
+
       - name: Install Tauri CLI (locally)
         run: npm install @tauri-apps/cli --legacy-peer-deps
 
@@ -107,22 +107,40 @@ jobs:
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
+          echo "::add-mask::$CERT_PASSWORD"
+          echo "::add-mask::$CERT_DEVELOPER_APP_BASE64"
+          echo "::add-mask::$CERT_DEVELOPER_INSTALL_BASE64"
+          echo "::add-mask::$APPLE_ID"
+          echo "::add-mask::$APP_PASSWORD"
+          echo "::add-mask::$TEAM_ID"
+
           echo "$CERT_DEVELOPER_APP_BASE64" | base64 --decode > developer_app.p12
           echo "$CERT_DEVELOPER_INSTALL_BASE64" | base64 --decode > developer_installer.p12
 
+          # Create a clean, isolated keychain for this run
           security create-keychain -p "" build.keychain-db
+          security set-keychain-settings -lut 21600 build.keychain-db
           security default-keychain -s build.keychain-db
           security unlock-keychain -p "" build.keychain-db
+
+          # IMPORTANT: add the new keychain to the search list.
+          # Relying on "default keychain" alone is unreliable across runs/runner images
+          # and is the most common cause of intermittent codesign "no identity found" failures.
+          security list-keychains -d user -s build.keychain-db login.keychain-db
 
           security import developer_app.p12 -k build.keychain-db -P "$CERT_PASSWORD" -T /usr/bin/codesign
           security import developer_installer.p12 -k build.keychain-db -P "$CERT_PASSWORD" -T /usr/bin/productsign
 
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain-db
 
+          # Fail fast with a clear signal if the identity isn't actually importable
+          echo "Identities available for signing:"
+          security find-identity -v -p codesigning build.keychain-db
+
           xcrun notarytool store-credentials "MAC_PASSWORD" \
-            --apple-id "${{ secrets.APPLE_ID }}" \
-            --team-id "${{ secrets.TEAM_ID }}" \
-            --password "${{ secrets.APP_PASSWORD }}"
+            --apple-id "$APPLE_ID" \
+            --team-id "$TEAM_ID" \
+            --password "$APP_PASSWORD"
 
       - name: Setup MSVC dev environment
         if: runner.os == 'Windows'
@@ -140,17 +158,22 @@ jobs:
           mkdir -p SignedApp
           cp -R /Volumes/MyApp/*.app ./SignedApp
           hdiutil detach /Volumes/MyApp
-          
+
       - name: Sign .app bundle
         if: runner.os == 'macOS'
         env:
           MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
         run: |
+          security unlock-keychain -p "" build.keychain-db
+          security list-keychains -d user -s build.keychain-db login.keychain-db
+
           codesign --deep --force --verbose --options runtime \
             --sign "${MACOS_SIGN_IDENTITY}" \
+            --keychain build.keychain-db \
             SignedApp/*.app
+
           codesign --verify --deep --strict --verbose=2 SignedApp/*.app
-            
+
       - name: Verify SignedApp directory contents
         if: runner.os == 'macOS'
         run: |
@@ -162,7 +185,7 @@ jobs:
           npm install -g create-dmg
           mkdir -p rebuilt-dmg
           npx create-dmg SignedApp/*.app rebuilt-dmg --overwrite
-          
+
       - name: Notarize macOS App
         if: runner.os == 'macOS'
         env:
@@ -181,7 +204,7 @@ jobs:
         run: |
           dmg_path=$(find rebuilt-dmg -name "*.dmg" | head -n 1)
           xcrun stapler staple "$dmg_path"
-          
+
       - name: Upload Artifact for macOS
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
@@ -233,7 +256,7 @@ jobs:
             echo "Error: Tag $version not found locally."
             exit 1
           fi
-          
+
       # Download platform-specific artifacts
       - name: Download macOS Artifact
         uses: actions/download-artifact@v4
