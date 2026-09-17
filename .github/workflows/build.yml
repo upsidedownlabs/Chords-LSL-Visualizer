@@ -8,6 +8,8 @@ on:
 jobs:
   check-version-and-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       tag_exists: ${{ steps.check_tag.outputs.tag_exists }}
       version: ${{ steps.get_version.outputs.version }}
@@ -49,9 +51,11 @@ jobs:
     # Only run if tag doesn't exist
     if: needs.check-version-and-tag.outputs.tag_exists == 'false'
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-22.04]
+        os: [macos-latest, windows-2022, ubuntu-22.04]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -119,6 +123,10 @@ jobs:
             --apple-id "${{ secrets.APPLE_ID }}" \
             --team-id "${{ secrets.TEAM_ID }}" \
             --password "${{ secrets.APP_PASSWORD }}"
+
+      - name: Setup MSVC dev environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
       - name: Build Tauri App
         run: npx tauri build
@@ -207,6 +215,8 @@ jobs:
     # Only run if tag doesn't exist (which implies build ran successfully)
     if: needs.check-version-and-tag.outputs.tag_exists == 'false'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
